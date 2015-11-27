@@ -1,17 +1,17 @@
-﻿Build started 11/27/2015 10:42:52 AM.
+﻿Build started 11/27/2015 4:45:23 PM.
      1>Project "C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\N3Terrain\N3Terrain.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I"C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\\include\\" /ZI /nologo /W3 /WX- /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Main.cpp N3Terrain.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I"C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\\include\\" /ZI /nologo /W3 /WX- /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt N3Terrain.cpp
          N3Terrain.cpp
-         Main.cpp
-         Generating Code...
+     1>c:\users\srmeier\documents\visual studio 2015\projects\n3terrain\n3terrain\n3terrain.cpp(100): warning C4018: '<': signed/unsigned mismatch
+     1>c:\users\srmeier\documents\visual studio 2015\projects\n3terrain\n3terrain\n3terrain.cpp(131): warning C4018: '<': signed/unsigned mismatch
+     1>c:\users\srmeier\documents\visual studio 2015\projects\n3terrain\n3terrain\n3terrain.cpp(135): warning C4018: '<': signed/unsigned mismatch
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\Debug\N3Terrain.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\\lib\\" SDL2.lib SDL2main.lib SDL2test.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\Debug\N3Terrain.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\Debug\N3Terrain.lib" /MACHINE:X86 Debug\Main.obj
          Debug\N3Terrain.obj
-     1>MSVCRTD.lib(initializers.obj) : warning LNK4098: defaultlib 'msvcrt.lib' conflicts with use of other libs; use /NODEFAULTLIB:library
          N3Terrain.vcxproj -> C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\Debug\N3Terrain.exe
      1>Done Building Project "C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\N3Terrain\N3Terrain.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.82
+Time Elapsed 00:00:00.54
