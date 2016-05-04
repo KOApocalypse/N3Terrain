@@ -1,4 +1,5 @@
 ﻿  Main.cpp
-c:\users\srmeier\documents\visual studio 2015\projects\n3terrain\n3terrain\main.cpp(829): warning C4018: '<': signed/unsigned mismatch
-c:\users\srmeier\documents\visual studio 2015\projects\n3terrain\n3terrain\main.cpp(833): warning C4838: conversion from 'int' to 'GLuint' requires a narrowing conversion
+c:\users\srmeier\documents\visual studio 2015\projects\n3terrain\n3terrain\main.cpp(601): warning C4018: '<': signed/unsigned mismatch
+c:\users\srmeier\documents\visual studio 2015\projects\n3terrain\n3terrain\main.cpp(855): warning C4018: '<': signed/unsigned mismatch
+c:\users\srmeier\documents\visual studio 2015\projects\n3terrain\n3terrain\main.cpp(859): warning C4838: conversion from 'int' to 'GLuint' requires a narrowing conversion
   N3Terrain.vcxproj -> C:\Users\srmeier\Documents\Visual Studio 2015\Projects\N3Terrain\Debug\N3Terrain.exe

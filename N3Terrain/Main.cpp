@@ -525,6 +525,85 @@ int SDL_main(int argc, char* argv[]) {
 	// NOTE: allocate a GPU buffer for the element data
 	glGenBuffers(1, &eleBuffer);
 
+	// ========================================================================
+
+	// NOTE: push all the terrain information to the GPU to save on draw time
+
+	int* gl_buf_offsets = (int*) malloc((m_ti_MapSize * m_ti_MapSize) * sizeof(int));
+
+	int buffer_len = 28 * (m_ti_MapSize * m_ti_MapSize);
+	float* vertex_info = (float*) malloc(buffer_len * sizeof(float));
+
+	int gl_os = 0;
+	int offset = 0;
+
+	for (int pX = 1; pX<(m_ti_MapSize-1); ++pX) {
+		for (int pZ = 1; pZ<(m_ti_MapSize-1); ++pZ) {
+			if (pX<1 || pX>(m_ti_MapSize - 1)) continue;
+			if (pZ<1 || pZ>(m_ti_MapSize - 1)) continue;
+
+			_N3MapData MapData = m_pMapData[(pX*m_ti_MapSize) + pZ];
+
+			float u10, u11, u12, u13;
+			float v10, v11, v12, v13;
+			float u20, u21, u22, u23;
+			float v20, v21, v22, v23;
+
+			u10 = TileDirU[MapData.Tex1Dir][2];
+			u11 = TileDirU[MapData.Tex1Dir][0];
+			u12 = TileDirU[MapData.Tex1Dir][1];
+			u13 = TileDirU[MapData.Tex1Dir][3];
+
+			v10 = TileDirV[MapData.Tex1Dir][2];
+			v11 = TileDirV[MapData.Tex1Dir][0];
+			v12 = TileDirV[MapData.Tex1Dir][1];
+			v13 = TileDirV[MapData.Tex1Dir][3];
+
+			u20 = TileDirU[MapData.Tex2Dir][2];
+			u21 = TileDirU[MapData.Tex2Dir][0];
+			u22 = TileDirU[MapData.Tex2Dir][1];
+			u23 = TileDirU[MapData.Tex2Dir][3];
+
+			v20 = TileDirV[MapData.Tex2Dir][2];
+			v21 = TileDirV[MapData.Tex2Dir][0];
+			v22 = TileDirV[MapData.Tex2Dir][1];
+			v23 = TileDirV[MapData.Tex2Dir][3];
+
+			float x0, y0, z0;
+			float x1, y1, z1;
+			float x2, y2, z2;
+			float x3, y3, z3;
+
+			x0 = (float)(pX*TILE_SIZE);
+			y0 = m_pMapData[(pX*m_ti_MapSize) + pZ].fHeight;
+			z0 = (float)(pZ*TILE_SIZE);
+
+			x1 = (float)(pX*TILE_SIZE);
+			y1 = m_pMapData[(pX*m_ti_MapSize) + pZ + 1].fHeight;
+			z1 = (float)((pZ + 1)*TILE_SIZE);
+
+			x2 = (float)((pX + 1)*TILE_SIZE);
+			y2 = m_pMapData[((pX + 1)*m_ti_MapSize) + pZ + 1].fHeight;
+			z2 = (float)((pZ + 1)*TILE_SIZE);
+
+			x3 = (float)((pX + 1)*TILE_SIZE);
+			y3 = m_pMapData[((pX + 1)*m_ti_MapSize) + pZ].fHeight;
+			z3 = (float)(pZ*TILE_SIZE);
+
+			float vertices[] = {
+				x0, y0, z0, u10, v10, u20, v20, // Top-left
+				x1, y1, z1, u11, v11, u21, v21, // Top-right
+				x2, y2, z2, u12, v12, u22, v22, // Bottom-right
+				x3, y3, z3, u13, v13, u23, v23  // Bottom-left
+			}; size_t n = sizeof(vertices) / sizeof(float);
+
+			gl_buf_offsets[(pX*m_ti_MapSize) + pZ] = offset;
+			for (int i = 0; i < n; ++i) vertex_info[offset++] = vertices[i];
+		}
+	}
+
+	SetVerts(vertex_info, offset);
+
 	/* TESTING */
 	// ========================================================================
 
@@ -545,7 +624,7 @@ int SDL_main(int argc, char* argv[]) {
 	GLint uniView = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
 
-	glm::mat4 proj = glm::perspective(45.0f, 800.0f / 600.0f, 0.5f, 150.0f);
+	glm::mat4 proj = glm::perspective(45.0f, 800.0f / 600.0f, 0.5f, 1000.0f);
 
 	GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
@@ -617,15 +696,13 @@ int SDL_main(int argc, char* argv[]) {
 		int curPatX = (int)(m_position.x / ((float)(TILE_SIZE*PATCH_TILE_SIZE)));
 
 		int pZ, pX;
-		for (pX = curPatX - 4; pX<curPatX + 4; ++pX) {
-			for (pZ = curPatZ - 4; pZ<curPatZ + 4; ++pZ) {
-				if (pX<0 || pX>m_pat_MapSize) continue;
-				if (pZ<0 || pZ>m_pat_MapSize) continue;
+		for (pX = curPatX - 8; pX<curPatX + 8; ++pX) {
+			for (pZ = curPatZ - 8; pZ<curPatZ + 8; ++pZ) {
+				if (pX<1 || pX>(m_pat_MapSize-1)) continue;
+				if (pZ<1 || pZ>(m_pat_MapSize-1)) continue;
 
 				int m_ti_LBPoint_x = (pX*PATCH_TILE_SIZE);
 				int m_ti_LBPoint_z = (pZ*PATCH_TILE_SIZE);
-
-				// CN3TerrainPatch::Tick()
 
 				int iz, ix;
 				for (ix = 0; ix<PATCH_TILE_SIZE; ++ix) {
@@ -637,62 +714,11 @@ int SDL_main(int argc, char* argv[]) {
 
 						SetTexture(MapData.Tex1Idx, MapData.Tex2Idx);
 
-						float u10, u11, u12, u13;
-						float v10, v11, v12, v13;
-						float u20, u21, u22, u23;
-						float v20, v21, v22, v23;
+						int i1 = gl_buf_offsets[(tx*m_ti_MapSize) + tz];
+						int i2 = (i1 / 28);
+						int i3 = (i2 * 6);
 
-						u10 = TileDirU[MapData.Tex1Dir][2];
-						u11 = TileDirU[MapData.Tex1Dir][0];
-						u12 = TileDirU[MapData.Tex1Dir][1];
-						u13 = TileDirU[MapData.Tex1Dir][3];
-
-						v10 = TileDirV[MapData.Tex1Dir][2];
-						v11 = TileDirV[MapData.Tex1Dir][0];
-						v12 = TileDirV[MapData.Tex1Dir][1];
-						v13 = TileDirV[MapData.Tex1Dir][3];
-
-						u20 = TileDirU[MapData.Tex2Dir][2];
-						u21 = TileDirU[MapData.Tex2Dir][0];
-						u22 = TileDirU[MapData.Tex2Dir][1];
-						u23 = TileDirU[MapData.Tex2Dir][3];
-
-						v20 = TileDirV[MapData.Tex2Dir][2];
-						v21 = TileDirV[MapData.Tex2Dir][0];
-						v22 = TileDirV[MapData.Tex2Dir][1];
-						v23 = TileDirV[MapData.Tex2Dir][3];
-
-						float x0, y0, z0;
-						float x1, y1, z1;
-						float x2, y2, z2;
-						float x3, y3, z3;
-
-						x0 = (float)(tx*TILE_SIZE);
-						y0 = m_pMapData[(tx*m_ti_MapSize) + tz].fHeight;
-						z0 = (float)(tz*TILE_SIZE);
-
-						x1 = (float)(tx*TILE_SIZE);
-						y1 = m_pMapData[(tx*m_ti_MapSize) + tz + 1].fHeight;
-						z1 = (float)((tz + 1)*TILE_SIZE);
-
-						x2 = (float)((tx + 1)*TILE_SIZE);
-						y2 = m_pMapData[((tx + 1)*m_ti_MapSize) + tz + 1].fHeight;
-						z2 = (float)((tz + 1)*TILE_SIZE);
-
-						x3 = (float)((tx + 1)*TILE_SIZE);
-						y3 = m_pMapData[((tx + 1)*m_ti_MapSize) + tz].fHeight;
-						z3 = (float)(tz*TILE_SIZE);
-
-						float vertices[] = {
-							x0, y0, z0, u10, v10, u20, v20, // Top-left
-							x1, y1, z1, u11, v11, u21, v21, // Top-right
-							x2, y2, z2, u12, v12, u22, v22, // Bottom-right
-							x3, y3, z3, u13, v13, u23, v23  // Bottom-left
-						}; size_t n = sizeof(vertices) / sizeof(float);
-
-						SetVerts(vertices, n);
-
-						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(i3*sizeof(GLuint)));
 					}
 				}
 			}
@@ -841,7 +867,7 @@ void SetVerts(float* verts, size_t n) {
 	// NOTE: send our element data to the GPU and set as STAIC
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, quads * 6 * sizeof(GLuint), elems, GL_STATIC_DRAW);
 
-	free(elems);
+	//free(elems);
 }
 
 //-----------------------------------------------------------------------------
